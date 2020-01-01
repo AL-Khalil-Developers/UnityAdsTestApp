@@ -1,0 +1,2 @@
+include ':app', ':unity-ads'
+rootProject.name='myTestApp'
