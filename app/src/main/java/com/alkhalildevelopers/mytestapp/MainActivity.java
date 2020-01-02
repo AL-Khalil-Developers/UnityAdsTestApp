@@ -3,6 +3,7 @@ package com.alkhalildevelopers.mytestapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -51,6 +52,37 @@ public class MainActivity extends AppCompatActivity {
 
         UnityAds.setListener(unityAdsListener);
 
+        if (UnityAds.isInitialized()){
+            UnityAds.load(interstitialAdPlacement);
+            UnityBanners.loadBanner(MainActivity.this,bannerAdPlacement);
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    DisplayInterstitialAd();
+                }
+            },5000);
+        }else {
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    UnityAds.load(interstitialAdPlacement);
+
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            DisplayInterstitialAd();
+                            UnityBanners.loadBanner(MainActivity.this,bannerAdPlacement);
+                        }
+                    },5000);
+                }
+            },5000);
+        }
+
+
         IUnityBannerListener iUnityBannerListener = new IUnityBannerListener() {
             @Override
             public void onUnityBannerLoaded(String s, View view) {
@@ -87,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
 
         UnityBanners.setBannerListener(iUnityBannerListener);
 
-
         showInterstitialBtn = findViewById(R.id.showInterstitialAdBtn);
         showBannerBtn = findViewById(R.id.showBannerAdBtn);
 
@@ -96,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 UnityAds.load(interstitialAdPlacement);
                 DisplayInterstitialAd();
-                UnityBanners.loadBanner(MainActivity.this,bannerAdPlacement);
+
             }
         });
 
@@ -108,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
 
     private  void DisplayInterstitialAd (){
         if (UnityAds.isReady(interstitialAdPlacement)){
